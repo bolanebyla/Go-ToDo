@@ -11,7 +11,8 @@ func StartApiServer() {
 
 	router := mux.NewRouter()
 
-	router.HandleFunc("/api/tasks/", GetTasks)
+	router.HandleFunc("/api/tasks/", GetTasks).Methods("GET")
+	router.HandleFunc("/api/tasks/", CreateTask).Methods("POST")
 
 	port := os.Getenv("PORT")
 	if port == "" {
