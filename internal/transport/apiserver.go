@@ -4,31 +4,29 @@ import (
 	"github.com/gorilla/mux"
 	"log"
 	"net/http"
-	"os"
 )
 
-func StartApiServer() {
+type ApiServer struct {
+	router mux.Router
+	host   string
+	port   string
+}
 
-	router := mux.NewRouter()
-
-	router.HandleFunc("/api/tasks/", GetTasks).Methods("GET")
-	router.HandleFunc("/api/tasks/", CreateTask).Methods("POST")
-
-	port := os.Getenv("PORT")
-	if port == "" {
-		port = "8000"
+func CreateApiServer(router *mux.Router, host string, port string) *ApiServer {
+	return &ApiServer{
+		router: *router,
+		host:   host,
+		port:   port,
 	}
+}
 
-	host := os.Getenv("HOST")
-	if host == "" {
-		host = "127.0.0.1"
-	}
+func (s *ApiServer) StartApiServer() {
 
-	addr := host + ":" + port
+	addr := s.host + ":" + s.port
 
 	log.Printf("Start API server on: http://%s", addr)
 
-	err := http.ListenAndServe(addr, router)
+	err := http.ListenAndServe(addr, &s.router)
 	if err != nil {
 		log.Fatal(err)
 	}
